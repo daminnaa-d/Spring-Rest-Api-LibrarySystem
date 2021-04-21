@@ -1,8 +1,6 @@
 package com.example.librarysystem.controller;
 
-import com.example.librarysystem.entity.Member;
 import com.example.librarysystem.entity.Request;
-import com.example.librarysystem.repository.MemberRepository;
 import com.example.librarysystem.repository.RequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

@@ -2,7 +2,10 @@ package com.example.librarysystem.controller;
 
 import com.example.librarysystem.entity.Member;
 import com.example.librarysystem.repository.MemberRepository;
+import com.example.librarysystem.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,34 +15,53 @@ import java.util.List;
 public class MemberController {
 
     @Autowired
-    private MemberRepository memberRepository;
+    private MemberService memberService;
 
-    @GetMapping("")
-    public List<Member> getAllMembers(){
-        return memberRepository.findAll();
+    @GetMapping("/hello")
+    public String hello() {
+        return "Hello everyone!";
     }
 
-    @GetMapping("/{id}")
-    public Member getMember(@PathVariable Long id) {
-        return memberRepository.findById(id).get();
-        }
+    @GetMapping
+    public List<Member> getAllMembers() {
+        return memberService.getAllMembers();
+    }
 
-    @PostMapping("")
-    public Member addNewMember(@RequestBody Member member){
-        return memberRepository.save(member);
+    // add user
+    @GetMapping("/create")
+    public void createUserByUsernamePassword(String username,
+                                             String password) {
+        Member member = new Member();
+        member.setPassword(password);
+        member.setUsername(username);
 
+        memberService.createMember(member);
+    }
+
+    @PostMapping
+    public void createMember(@RequestBody Member member) {
+        System.out.println("MemberController.createMember");
+        System.out.println("member = " + member);
+
+        memberService.createMember(member);
     }
 
     @PutMapping("/{id}")
-    public Member updateMember(@PathVariable Long id,
-                               @RequestBody Member member){
-        member.setMember_id(id);
-        return memberRepository.saveAndFlush(member);
+    public void updateUser(@PathVariable Long id,
+                           @RequestBody Member member) {
+
+        System.out.println("MemberController.updateMember");
+        System.out.println("id = " + id);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("authentication.getName() = " + authentication.getName());
+
+        memberService.updateMember(id, member);
     }
 
     @DeleteMapping("/{id}")
     public String deleteMember(@PathVariable Long id){
-        memberRepository.deleteById(id);
+        memberService.deleteMember(id);
         return "Member with ID: " + id + ", was deleted!";
     }
 
